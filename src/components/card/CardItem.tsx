@@ -1,39 +1,46 @@
-import * as React from "react";
+import React, { FC } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { INote } from "../../types/notes.interface";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const bull = (
-  <Box component="span" sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}>
-    •
-  </Box>
-);
+type CardItemProps = {
+  note: INote;
+};
 
-export default function CardItem() {
+const CardItem: FC<CardItemProps> = ({ note }) => {
+  const handleDeleteButton = () => {};
   return (
-    <Card sx={{ minWidth: 275 }}>
+    <Card sx={{ minWidth: 250 }}>
       <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Word of the Day
+        <Typography sx={{ textAlign: "center" }} variant="h5" component="div">
+          {note.title}
         </Typography>
-        <Typography variant="h5" component="div">
-          be{bull}nev{bull}o{bull}lent
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          adjective
-        </Typography>
-        <Typography variant="body2">
-          well meaning and kindly.
-          <br />
-          {'"a benevolent smile"'}
-        </Typography>
+        <Typography variant="body2">{note.body}</Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Learn More</Button>
+        {/* <Button size="small" variant="outlined">
+          Подробнее
+        </Button> */}
+        <Button size="small" variant="contained" color="success">
+          Редактировать
+        </Button>
+        <Button
+          onClick={handleDeleteButton}
+          startIcon={<DeleteIcon />}
+          size="small"
+          variant="outlined"
+          color="error"
+        >
+          Удалить
+        </Button>
       </CardActions>
     </Card>
   );
-}
+};
+
+export default CardItem;
