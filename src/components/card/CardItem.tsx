@@ -5,15 +5,34 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { INote } from "../../types/notes.interface";
+import { INote, INoteData } from "../../types/notes.interface";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { deleteNote } from "../../slices/note.slice";
+import { useAppDispatch } from "../../hooks/redux";
+import { dbName, dbVersion } from "../../constants/db.ts";
 
 type CardItemProps = {
-  note: INote;
+  note: INoteData;
+  handleOpen: () => void;
+  setNoteForEdit: React.Dispatch<React.SetStateAction<INoteData | undefined>>;
 };
 
-const CardItem: FC<CardItemProps> = ({ note }) => {
-  const handleDeleteButton = () => {};
+const CardItem: FC<CardItemProps> = ({ note, handleOpen, setNoteForEdit }) => {
+  const dispath = useAppDispatch();
+  const handleDeleteButton = () => {
+    const dbPromise = indexedDB.open(dbName, dbVersion);
+    dbPromise.onsuccess = () => {
+      const db = dbPromise.result;
+      const transaction = db.transaction("notes", "readwrite");
+      const noteData = transaction.objectStore("notes");
+      let requestDelete = noteData.delete(note.id);
+      console.log(note.id);
+      requestDelete.onsuccess = () => {
+        dispath(deleteNote(note));
+      };
+    };
+  };
+
   return (
     <Card sx={{ minWidth: 250 }}>
       <CardContent>
@@ -26,7 +45,16 @@ const CardItem: FC<CardItemProps> = ({ note }) => {
         {/* <Button size="small" variant="outlined">
           Подробнее
         </Button> */}
-        <Button size="small" variant="contained" color="success">
+        <Button
+          size="small"
+          variant="contained"
+          color="success"
+          onClick={() => {
+            setNoteForEdit(note);
+
+            handleOpen();
+          }}
+        >
           Редактировать
         </Button>
         <Button

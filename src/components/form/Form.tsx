@@ -2,10 +2,10 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import React, { FC } from "react";
-import { INote } from "../../types/notes.interface";
+import { INote, INoteData } from "../../types/notes.interface";
 import Paper from "@mui/material/Paper";
 import { useAppDispatch } from "../../hooks/redux";
-import { addNote } from "../../slices/note.slice";
+import { addNote, editNote } from "../../slices/note.slice";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import { dbName, dbVersion } from "../../constants/db.ts";
@@ -23,16 +23,30 @@ const form = {
 
 type FormProps = {
   handleClose: () => void;
+  noteForEdit: INoteData | undefined;
 };
-const Form: FC<FormProps> = ({ handleClose }) => {
+const Form: FC<FormProps> = ({ handleClose, noteForEdit }) => {
   const [note, setNote] = React.useState<INote>({
     title: "",
     body: "",
     hashtags: [],
   });
+  React.useEffect(() => {
+    if (noteForEdit !== undefined) {
+      console.log(noteForEdit);
+      setNote((prev) => ({
+        ...prev,
+        title: noteForEdit.title,
+        body: noteForEdit.body,
+        hashtags: noteForEdit.hashtags,
+      }));
+    }
+  }, [noteForEdit]);
+
+  console.log(note);
   const dispath = useAppDispatch();
   const [hashTags, setHashTags] = React.useState<string[]>([]);
-  const [isSuccessful, setIsSuccessfull] = React.useState<boolean>();
+
   function findHashtags(
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
@@ -47,13 +61,15 @@ const Form: FC<FormProps> = ({ handleClose }) => {
     }
     setNote((prev: INote) => ({ ...prev, hashtags: hashTags }));
   }
-  function clearNoteState() {
-    setNote({} as INote);
-    setHashTags([]);
-  }
-  React.useEffect(() => {
-    clearNoteState();
-  }, [open]);
+
+  // function clearNoteState() {
+  //   setNote({} as INote);
+  //   setHashTags([]);
+  // }
+
+  // React.useEffect(() => {
+  //   clearNoteState();
+  // }, [open]);
 
   function handleSuccessButton() {
     const dbPromise = indexedDB.open(dbName, dbVersion);
@@ -64,11 +80,25 @@ const Form: FC<FormProps> = ({ handleClose }) => {
       const requestAdd = noteData.add({ ...note });
       console.log(requestAdd);
       requestAdd.onsuccess = (event) => {
-        <Alert severity="success">successfull added in IndexedDB</Alert>;
+        console.log(typeof requestAdd.result);
+        dispath(addNote({ ...note, id: requestAdd.result.toString() }));
       };
-      requestAdd.onerror = (event) => {
-        <Alert severity="warning">error to added in IndexedDB</Alert>;
+      requestAdd.onerror = (event) => {};
+      handleClose();
+    };
+  }
+
+  function handleEditButton() {
+    const dbPromise = indexedDB.open(dbName, dbVersion);
+    dbPromise.onsuccess = () => {
+      const db = dbPromise.result;
+      const transaction = db.transaction("notes", "readwrite");
+      const noteData = transaction.objectStore("notes");
+      const requestUpdate = noteData.put({ ...note, id: noteForEdit?.id });
+      requestUpdate.onsuccess = (event) => {
+        dispath(editNote({ ...note, id: requestUpdate.result.toString() }));
       };
+      requestUpdate.onerror = (event) => {};
       handleClose();
     };
   }
@@ -149,13 +179,23 @@ const Form: FC<FormProps> = ({ handleClose }) => {
         <Button onClick={handleClose} variant="outlined" color="error">
           Назад
         </Button>
-        <Button
-          onClick={handleSuccessButton}
-          variant="contained"
-          color="success"
-        >
-          Добавить
-        </Button>
+        {noteForEdit ? (
+          <Button
+            onClick={handleEditButton}
+            variant="contained"
+            color="success"
+          >
+            Изменить
+          </Button>
+        ) : (
+          <Button
+            onClick={handleSuccessButton}
+            variant="contained"
+            color="success"
+          >
+            Добавить
+          </Button>
+        )}
       </Box>
     </Box>
   );

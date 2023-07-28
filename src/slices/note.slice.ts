@@ -1,8 +1,8 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { INote } from "../types/notes.interface";
+import { INote, INoteData } from "../types/notes.interface";
 
 interface INotesState {
-  notes: INote[];
+  notes: INoteData[];
 }
 
 const initialState: INotesState = {
@@ -12,14 +12,26 @@ export const notesSlice = createSlice({
   name: "notes",
   initialState,
   reducers: {
-    addNote: (state, action: PayloadAction<INote[]>) => {
-      state.notes = [...action.payload];
+    addNote: (state, action: PayloadAction<INoteData[] | INoteData>) => {
+      if (Array.isArray(action.payload)) {
+        state.notes = [...action.payload];
+      } else {
+        state.notes.push(action.payload);
+      }
     },
-    deleteNote: (state, action: PayloadAction<any>) => {
-      state.notes = state.notes.filter((note) => note !== action.payload);
+    deleteNote: (state, action: PayloadAction<INoteData>) => {
+      state.notes = state.notes.filter((note) => note.id !== action.payload.id);
+    },
+    editNote: (state, action: PayloadAction<INoteData>) => {
+      const noteToUpdateIndex = state.notes.findIndex(
+        (note) => note.id == action.payload.id
+      );
+      if (noteToUpdateIndex) {
+        state.notes[noteToUpdateIndex] = action.payload;
+      }
     },
   },
 });
 
-export const { addNote, deleteNote } = notesSlice.actions;
+export const { addNote, deleteNote, editNote } = notesSlice.actions;
 export default notesSlice.reducer;

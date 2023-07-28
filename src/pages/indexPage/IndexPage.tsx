@@ -8,7 +8,7 @@ import Form from "../../components/form/Form";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import { dbName, dbVersion } from "../../constants/db.ts";
-import { INote } from "../../types/notes.interface.ts";
+import { INote, INoteData } from "../../types/notes.interface.ts";
 import { addNote } from "../../slices/note.slice.ts";
 const idb = window.indexedDB;
 
@@ -34,21 +34,27 @@ const createCollectionsInIndexedDB = () => {
       keyPath: "id",
       autoIncrement: true,
     });
-
-    // objectStore.createIndex("titleIndex", "title", { unique: false });
   };
 };
 const IndexPage = () => {
+  const [noteForEdit, setNoteForEdit] = React.useState<INoteData | undefined>(
+    undefined
+  );
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  // const notes = useAppSelector((state) => state.note.notes);
   const dispath = useAppDispatch();
   const notes = useAppSelector((state) => state.note.notes);
   React.useEffect(() => {
     createCollectionsInIndexedDB();
     getAllNote();
   }, []);
+
+  React.useEffect(() => {
+    if (open === false) {
+      setNoteForEdit(undefined);
+    }
+  }, [open]);
 
   const getAllNote = () => {
     const dbPromise = indexedDB.open(dbName, dbVersion);
@@ -62,7 +68,7 @@ const IndexPage = () => {
       };
     };
   };
-  console.log(notes);
+
   return (
     <>
       <Button sx={{ marginY: 2 }} onClick={handleOpen} variant="outlined">
@@ -75,10 +81,22 @@ const IndexPage = () => {
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
-          <Form handleClose={handleClose} />
+          {noteForEdit !== undefined ? (
+            <Form handleClose={handleClose} noteForEdit={noteForEdit} />
+          ) : (
+            <Form handleClose={handleClose} noteForEdit={undefined} />
+          )}
         </Modal>
         <Grid container spacing={2}>
-          {notes && notes.map((note) => <CardItem note={note} key={note.id} />)}
+          {notes &&
+            notes.map((note) => (
+              <CardItem
+                note={note}
+                key={note.id}
+                handleOpen={handleOpen}
+                setNoteForEdit={setNoteForEdit}
+              />
+            ))}
         </Grid>
       </Container>
     </>
