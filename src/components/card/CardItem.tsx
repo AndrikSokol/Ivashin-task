@@ -34,7 +34,7 @@ const CardItem: FC<CardItemProps> = ({ note, handleOpen, setNoteForEdit }) => {
   };
 
   return (
-    <Card sx={{ minWidth: 250 }}>
+    <Card sx={{ minWidth: 250, maxWidth: 250 }}>
       <CardContent>
         <Typography sx={{ textAlign: "center" }} variant="h5" component="div">
           {note.title}

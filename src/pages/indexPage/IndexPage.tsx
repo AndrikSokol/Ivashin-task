@@ -90,12 +90,14 @@ const IndexPage = () => {
         <Grid container spacing={2}>
           {notes &&
             notes.map((note) => (
-              <CardItem
-                note={note}
-                key={note.id}
-                handleOpen={handleOpen}
-                setNoteForEdit={setNoteForEdit}
-              />
+              <Grid>
+                <CardItem
+                  note={note}
+                  key={note.id}
+                  handleOpen={handleOpen}
+                  setNoteForEdit={setNoteForEdit}
+                />
+              </Grid>
             ))}
         </Grid>
       </Container>
