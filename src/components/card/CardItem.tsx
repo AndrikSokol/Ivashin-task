@@ -34,13 +34,15 @@ const CardItem: FC<CardItemProps> = ({ note, handleOpen, setNoteForEdit }) => {
   };
 
   return (
-    <Card sx={{ minWidth: 250 }}>
+    <Card>
       <CardContent>
         <Typography sx={{ textAlign: "center" }} variant="h5" component="div">
           {note.title}
         </Typography>
-        <Typography variant="body2">{note.body}</Typography>
-        <Typography variant="body2">
+        <Typography sx={{ textAlign: "justify" }} variant="body2">
+          {note.body}
+        </Typography>
+        <Typography sx={{ fontWeight: "500" }} variant="body2">
           Хеш теги: {note.hashtags.join(" ")}
         </Typography>
       </CardContent>
@@ -60,13 +62,7 @@ const CardItem: FC<CardItemProps> = ({ note, handleOpen, setNoteForEdit }) => {
         >
           Редактировать
         </Button>
-        <Button
-          onClick={handleDeleteButton}
-          startIcon={<DeleteIcon />}
-          size="small"
-          variant="outlined"
-          color="error"
-        >
+        <Button onClick={handleDeleteButton} startIcon={<DeleteIcon />} size="small" variant="outlined" color="error">
           Удалить
         </Button>
       </CardActions>

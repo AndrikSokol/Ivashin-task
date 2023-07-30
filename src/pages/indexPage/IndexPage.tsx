@@ -31,9 +31,7 @@ const MenuProps = {
 };
 
 const IndexPage = () => {
-  const [noteForEdit, setNoteForEdit] = React.useState<INoteData | undefined>(
-    undefined
-  );
+  const [noteForEdit, setNoteForEdit] = React.useState<INoteData | undefined>(undefined);
 
   const [open, setOpen] = React.useState(false);
   const [uniqueHashTags, setUniqueHashTags] = React.useState<string[]>([]);
@@ -60,7 +58,8 @@ const IndexPage = () => {
     }
     console.log(hashTags);
     setUniqueHashTags([...new Set(hashTags)]);
-    console.log(uniqueHashTags);
+
+    console.log("uniqueHashTags" + uniqueHashTags);
   }, [notes]);
 
   const getAllNote = () => {
@@ -76,49 +75,48 @@ const IndexPage = () => {
     };
   };
 
-  const [personName, setPersonName] = React.useState<string[]>([]);
-  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+  const [currentHashTags, setCurrentHashTags] = React.useState<string[]>([]);
+  const handleChange = (event: SelectChangeEvent<typeof currentHashTags>) => {
     const {
       target: { value },
     } = event;
-    setPersonName(
+    setCurrentHashTags(
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     );
   };
-
-  // React.useEffect(() => {
-  //   if (personName.length > 0) {
-  //     setSortedNotes(
-  //       notes.filter((note) =>
-  //         note.hashtags.some((tag) => personName.includes(tag))
-  //       )
-  //     );
-  //   }
-  // }, [personName]);
-
-  const filterNotesByPersonNames = (notes, personName) => {
-    return notes.filter((note) =>
-      note.hashtags.some((tag) => personName.includes(tag))
+  console.log("currentHashTags ", currentHashTags);
+  React.useEffect(() => {
+    setCurrentHashTags(
+      currentHashTags.filter((currentHashTag) => {
+        uniqueHashTags.includes(currentHashTag);
+      })
     );
+  }, [uniqueHashTags]);
+
+  React.useEffect(() => {
+    if (currentHashTags.length > 0) {
+      filterNotesByPersonNames();
+    } else {
+      setSortedNotes(notes);
+    }
+
+    console.log(currentHashTags);
+  }, [currentHashTags, notes]);
+
+  const filterNotesByPersonNames = () => {
+    return setSortedNotes(notes.filter((note: INoteData) => note.hashtags.some((tag) => currentHashTags.includes(tag))));
   };
 
   return (
     <>
       <div>
         <FormControl sx={{ m: 1, width: 300 }}>
-          <InputLabel>Tag</InputLabel>
-          <Select
-            multiple
-            value={personName}
-            onChange={handleChange}
-            input={<OutlinedInput label="HashTags" />}
-            renderValue={(selected) => selected.join(", ")}
-            MenuProps={MenuProps}
-          >
+          <InputLabel>hashTags</InputLabel>
+          <Select multiple value={currentHashTags} onChange={handleChange} input={<OutlinedInput label="HashTags" />} renderValue={(selected) => selected.join(", ")} MenuProps={MenuProps}>
             {uniqueHashTags.map((uniqueHashTag) => (
               <MenuItem key={uniqueHashTag} value={uniqueHashTag}>
-                <Checkbox checked={personName.indexOf(uniqueHashTag) > -1} />
+                <Checkbox checked={currentHashTags.indexOf(uniqueHashTag) > -1} />
                 <ListItemText primary={uniqueHashTag} />
               </MenuItem>
             ))}
@@ -129,28 +127,14 @@ const IndexPage = () => {
         Добавить заметку
       </Button>
       <Container>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          {noteForEdit !== undefined ? (
-            <Form handleClose={handleClose} noteForEdit={noteForEdit} />
-          ) : (
-            <Form handleClose={handleClose} noteForEdit={undefined} />
-          )}
+        <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+          {noteForEdit !== undefined ? <Form handleClose={handleClose} noteForEdit={noteForEdit} /> : <Form handleClose={handleClose} noteForEdit={undefined} />}
         </Modal>
         <Grid container spacing={2}>
           {sortedNotes &&
             sortedNotes.map((note) => (
-              <Grid>
-                <CardItem
-                  note={note}
-                  key={note.id}
-                  handleOpen={handleOpen}
-                  setNoteForEdit={setNoteForEdit}
-                />
+              <Grid item xs={12} md={4} lg={3}>
+                <CardItem note={note} key={note.id} handleOpen={handleOpen} setNoteForEdit={setNoteForEdit} />
               </Grid>
             ))}
         </Grid>
