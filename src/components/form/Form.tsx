@@ -12,7 +12,7 @@ import { dbName, dbVersion } from "../../constants/db.ts";
 
 const form = {
   position: "absolute" as "absolute",
-  top: "35%",
+  top: "45%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
@@ -40,6 +40,7 @@ const Form: FC<FormProps> = ({ handleClose, noteForEdit }) => {
         body: noteForEdit.body,
         hashtags: noteForEdit.hashtags,
       }));
+      findHashtags(noteForEdit.body);
     }
   }, [noteForEdit]);
 
@@ -47,11 +48,7 @@ const Form: FC<FormProps> = ({ handleClose, noteForEdit }) => {
   const dispath = useAppDispatch();
   const [hashTags, setHashTags] = React.useState<string[]>([]);
 
-  function findHashtags(
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
-    setHashTags([]);
-    let text: string = event.target.value;
+  function findHashtags(text: string) {
     const words = text.split(" ");
     for (let i = 0; i < words.length; i++) {
       let word: string = words[i];
@@ -61,15 +58,6 @@ const Form: FC<FormProps> = ({ handleClose, noteForEdit }) => {
     }
     setNote((prev: INote) => ({ ...prev, hashtags: hashTags }));
   }
-
-  // function clearNoteState() {
-  //   setNote({} as INote);
-  //   setHashTags([]);
-  // }
-
-  // React.useEffect(() => {
-  //   clearNoteState();
-  // }, [open]);
 
   function handleSuccessButton() {
     const dbPromise = indexedDB.open(dbName, dbVersion);
@@ -104,7 +92,9 @@ const Form: FC<FormProps> = ({ handleClose, noteForEdit }) => {
   }
 
   function handleChangeBody(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    findHashtags(event);
+    setHashTags([]);
+    let text: string = event.target.value;
+    findHashtags(text);
     setNote((prev: INote) => ({ ...prev, body: event.target.value }));
   }
 
@@ -149,7 +139,7 @@ const Form: FC<FormProps> = ({ handleClose, noteForEdit }) => {
           value={note.body}
           onChange={handleChangeBody}
         />
-        {hashTags && (
+        {hashTags.length > 0 && (
           <Box
             sx={{
               display: "flex",

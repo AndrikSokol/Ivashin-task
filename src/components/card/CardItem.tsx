@@ -34,12 +34,15 @@ const CardItem: FC<CardItemProps> = ({ note, handleOpen, setNoteForEdit }) => {
   };
 
   return (
-    <Card sx={{ minWidth: 250, maxWidth: 250 }}>
+    <Card sx={{ minWidth: 250 }}>
       <CardContent>
         <Typography sx={{ textAlign: "center" }} variant="h5" component="div">
           {note.title}
         </Typography>
         <Typography variant="body2">{note.body}</Typography>
+        <Typography variant="body2">
+          Хеш теги: {note.hashtags.join(" ")}
+        </Typography>
       </CardContent>
       <CardActions>
         {/* <Button size="small" variant="outlined">

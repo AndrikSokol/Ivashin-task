@@ -1,23 +1,30 @@
-const dbName = "notes";
-const dbVersion = 1;
+import { dbName, dbVersion } from "../constants/db";
 
-const request = indexedDB.open(dbName, dbVersion);
+export class IndexedDB {
+  private static idb = window.indexedDB;
 
-request.onerror = (event) => {
-  console.error(`Error opening database: ${event}`);
-};
+  static createCollectionsInIndexedDB = () => {
+    if (!this.idb) {
+      console.log("browser doesnt support IndexedDB");
+    }
 
-request.onsuccess = (e) => {
-  const db = request.result;
-  console.log("Database opened successfully!", db);
-};
+    const request = this.idb.open(dbName, dbVersion);
 
-request.onupgradeneeded = () => {
-  const db = request.result;
-  const objectStore = db.createObjectStore("notes", {
-    keyPath: "id",
-    autoIncrement: true,
-  });
+    request.onerror = (event) => {
+      console.error(`Error opening database: ${event}`);
+    };
 
-  objectStore.createIndex("titleIndex", "title", { unique: false });
-};
+    request.onsuccess = (event) => {
+      const db = request.result;
+      console.log("Database opened successfully!", db);
+    };
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      const objectStore = db.createObjectStore("notes", {
+        keyPath: "id",
+        autoIncrement: true,
+      });
+    };
+  };
+}
