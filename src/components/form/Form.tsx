@@ -50,12 +50,16 @@ const Form: FC<FormProps> = ({ handleClose, noteForEdit }) => {
 
   function findHashtags(text: string) {
     const words = text.split(" ");
+    const currentHashTag: string[] = [];
     for (let i = 0; i < words.length; i++) {
       let word: string = words[i];
       if (word[0] === "#") {
-        setHashTags((prev: string[]) => [...prev, word]);
+        console.log("word ", word);
+        currentHashTag.push(word);
       }
     }
+    console.log(currentHashTag);
+    setHashTags(currentHashTag);
     setNote((prev: INote) => ({ ...prev, hashtags: hashTags }));
   }
 
@@ -92,7 +96,6 @@ const Form: FC<FormProps> = ({ handleClose, noteForEdit }) => {
   }
 
   function handleChangeBody(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    setHashTags([]);
     let text: string = event.target.value;
     findHashtags(text);
     setNote((prev: INote) => ({ ...prev, body: event.target.value }));
