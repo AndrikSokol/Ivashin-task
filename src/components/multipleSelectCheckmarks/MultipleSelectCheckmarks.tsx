@@ -23,6 +23,7 @@ const MenuProps = {
 type MultipleSelectCheckmarksProps = {
   setSortedNotes: React.Dispatch<React.SetStateAction<INoteData[]>>;
 };
+
 const MultipleSelectCheckmarks: FC<MultipleSelectCheckmarksProps> = ({
   setSortedNotes,
 }) => {
@@ -33,27 +34,21 @@ const MultipleSelectCheckmarks: FC<MultipleSelectCheckmarksProps> = ({
     const {
       target: { value },
     } = event;
-    setCurrentHashTags(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+    setCurrentHashTags(typeof value === "string" ? value.split(",") : value);
   };
-  console.log(notes);
+
   React.useEffect(() => {
     const hashTags: string[] = [];
     for (let note of notes) {
       hashTags.push(...note.hashtags);
     }
-    console.log(hashTags);
     setUniqueHashTags([...new Set(hashTags)]);
-
-    console.log("uniqueHashTags" + uniqueHashTags);
   }, [notes]);
 
   React.useEffect(() => {
     setCurrentHashTags(
       currentHashTags.filter((currentHashTag) => {
-        uniqueHashTags.includes(currentHashTag);
+        return uniqueHashTags.includes(currentHashTag);
       })
     );
   }, [uniqueHashTags]);
@@ -64,8 +59,6 @@ const MultipleSelectCheckmarks: FC<MultipleSelectCheckmarksProps> = ({
     } else {
       setSortedNotes(notes);
     }
-
-    console.log(currentHashTags);
   }, [currentHashTags, notes]);
 
   const filterNotesByCurrentHashTags = () => {

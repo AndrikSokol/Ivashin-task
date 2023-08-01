@@ -23,9 +23,9 @@ export const notesSlice = createSlice({
       state.notes = state.notes.filter((note) => note.id !== action.payload.id);
     },
     editNote: (state, action: PayloadAction<INoteData>) => {
-      const noteToUpdateIndex = state.notes.findIndex((note) => note.id == action.payload.id);
-      console.log(" console.log(noteToUpdateIndex);" + noteToUpdateIndex);
-      console.log(" action payload  ", action.payload.id);
+      const noteToUpdateIndex = state.notes.findIndex(
+        (note) => note.id == action.payload.id
+      );
       if (noteToUpdateIndex !== -1) {
         state.notes[noteToUpdateIndex] = action.payload;
       }

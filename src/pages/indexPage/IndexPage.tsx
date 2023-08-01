@@ -2,7 +2,7 @@ import Button from "@mui/material/Button";
 import CardItem from "../../components/card/CardItem";
 import style from "./IndexPage.module.scss";
 import Modal from "@mui/material/Modal";
-import React from "react";
+import React, { useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import Form from "../../components/form/Form";
 import Container from "@mui/material/Container";
@@ -19,7 +19,7 @@ const IndexPage = () => {
     undefined
   );
   const [open, setOpen] = React.useState(false);
-
+  const formRef = useRef(null);
   const [sortedNotes, setSortedNotes] = React.useState<INoteData[]>([]);
 
   const handleOpen = () => setOpen(true);
@@ -60,22 +60,29 @@ const IndexPage = () => {
         <Modal
           open={open}
           onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
+          aria-labelledby="modal-title"
+          aria-describedby="modal-description"
         >
           {noteForEdit !== undefined ? (
-            <Form handleClose={handleClose} noteForEdit={noteForEdit} />
+            <Form
+              ref={formRef}
+              handleClose={handleClose}
+              noteForEdit={noteForEdit}
+            />
           ) : (
-            <Form handleClose={handleClose} noteForEdit={undefined} />
+            <Form
+              ref={formRef}
+              handleClose={handleClose}
+              noteForEdit={undefined}
+            />
           )}
         </Modal>
         <Grid container spacing={2}>
           {sortedNotes &&
             sortedNotes.map((note) => (
-              <Grid item xs={12} md={4} lg={3}>
+              <Grid item xs={12} md={4} lg={3} key={note.id}>
                 <CardItem
                   note={note}
-                  key={note.id}
                   handleOpen={handleOpen}
                   setNoteForEdit={setNoteForEdit}
                 />
