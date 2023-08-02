@@ -14,14 +14,14 @@ export class IndexedDB {
       console.error(`Error opening database: ${event}`);
     };
 
-    request.onsuccess = (event) => {
+    request.onsuccess = () => {
       const db = request.result;
       console.log("Database opened successfully!", db);
     };
 
     request.onupgradeneeded = () => {
       const db = request.result;
-      const objectStore = db.createObjectStore("notes", {
+      db.createObjectStore("notes", {
         keyPath: "id",
         autoIncrement: true,
       });

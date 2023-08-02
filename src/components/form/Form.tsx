@@ -74,10 +74,12 @@ const Form = forwardRef<HTMLFormElement, FormProps>(
         const noteData = transaction.objectStore("notes");
         const requestAdd = noteData.add({ ...note });
         console.log(requestAdd);
-        requestAdd.onsuccess = (event) => {
+        requestAdd.onsuccess = () => {
           dispath(addNote({ ...note, id: requestAdd.result.toString() }));
         };
-        requestAdd.onerror = (event) => {};
+        requestAdd.onerror = () => {
+          console.log("error to add");
+        };
         handleClose();
       };
     }
@@ -89,10 +91,12 @@ const Form = forwardRef<HTMLFormElement, FormProps>(
         const transaction = db.transaction("notes", "readwrite");
         const noteData = transaction.objectStore("notes");
         const requestUpdate = noteData.put({ ...note, id: noteForEdit?.id });
-        requestUpdate.onsuccess = (event) => {
+        requestUpdate.onsuccess = () => {
           dispath(editNote({ ...note, id: requestUpdate.result.toString() }));
         };
-        requestUpdate.onerror = (event) => {};
+        requestUpdate.onerror = () => {
+          console.log("error to edit");
+        };
         handleClose();
       };
     }
