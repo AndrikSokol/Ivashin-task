@@ -1,13 +1,12 @@
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import React, { FC, ForwardedRef, forwardRef } from "react";
+import React, { ForwardedRef, forwardRef } from "react";
 import { INote, INoteData } from "../../types/notes.interface";
 import Paper from "@mui/material/Paper";
 import { useAppDispatch } from "../../hooks/redux";
 import { addNote, editNote } from "../../slices/note.slice";
 import Button from "@mui/material/Button";
-import Alert from "@mui/material/Alert";
 import { dbName, dbVersion } from "../../constants/db.ts";
 import { uid } from "react-uid";
 

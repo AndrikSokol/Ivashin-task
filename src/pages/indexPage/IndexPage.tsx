@@ -1,9 +1,8 @@
 import Button from "@mui/material/Button";
 import CardItem from "../../components/card/CardItem";
-import style from "./IndexPage.module.scss";
 import Modal from "@mui/material/Modal";
 import React, { useRef } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/redux";
+import { useAppDispatch } from "../../hooks/redux";
 import Form from "../../components/form/Form";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -11,7 +10,6 @@ import { dbName, dbVersion } from "../../constants/db.ts";
 import { INoteData } from "../../types/notes.interface.ts";
 import { addNote } from "../../slices/note.slice.ts";
 import { IndexedDB } from "../../database/indexedDB.ts";
-
 import MultipleSelectCheckmarks from "../../components/multipleSelectCheckmarks/MultipleSelectCheckmarks.tsx";
 
 const IndexPage = () => {
@@ -19,7 +17,7 @@ const IndexPage = () => {
     undefined
   );
   const [open, setOpen] = React.useState(false);
-  const formRef = useRef(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [sortedNotes, setSortedNotes] = React.useState<INoteData[]>([]);
 
   const handleOpen = () => setOpen(true);
