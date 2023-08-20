@@ -1,7 +1,7 @@
 import Button from "@mui/material/Button";
 import CardItem from "../../components/card/CardItem";
 import Modal from "@mui/material/Modal";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "../../hooks/redux";
 import Form from "../../components/form/Form";
 import Container from "@mui/material/Container";
