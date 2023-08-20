@@ -5,7 +5,7 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useAppSelector } from "../../hooks/redux";
 import { INoteData } from "../../types/notes.interface";
 
@@ -27,8 +27,9 @@ type MultipleSelectCheckmarksProps = {
 const MultipleSelectCheckmarks: FC<MultipleSelectCheckmarksProps> = ({
   setSortedNotes,
 }) => {
-  const [currentHashTags, setCurrentHashTags] = React.useState<string[]>([]);
-  const [uniqueHashTags, setUniqueHashTags] = React.useState<string[]>([]);
+  const [currentHashTags, setCurrentHashTags] = useState<string[]>([]);
+  const [uniqueHashTags, setUniqueHashTags] = useState<string[]>([]);
+
   const notes = useAppSelector((state) => state.note.notes);
   const handleChange = (event: SelectChangeEvent<typeof currentHashTags>) => {
     const {
@@ -37,7 +38,7 @@ const MultipleSelectCheckmarks: FC<MultipleSelectCheckmarksProps> = ({
     setCurrentHashTags(typeof value === "string" ? value.split(",") : value);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const hashTags: string[] = [];
     for (let note of notes) {
       hashTags.push(...note.hashtags);
@@ -45,7 +46,7 @@ const MultipleSelectCheckmarks: FC<MultipleSelectCheckmarksProps> = ({
     setUniqueHashTags([...new Set(hashTags)]);
   }, [notes]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentHashTags(
       currentHashTags.filter((currentHashTag) => {
         return uniqueHashTags.includes(currentHashTag);
@@ -53,7 +54,7 @@ const MultipleSelectCheckmarks: FC<MultipleSelectCheckmarksProps> = ({
     );
   }, [uniqueHashTags]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (currentHashTags.length > 0) {
       filterNotesByCurrentHashTags();
     } else {

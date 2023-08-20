@@ -1,5 +1,5 @@
 export interface INoteData {
-  id: string;
+  id: number;
   title: string;
   body: string;
   hashtags: string[];

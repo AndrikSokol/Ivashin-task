@@ -1,0 +1,5 @@
+.expandable-content {
+  max-height: 120px; /* Set the initial max-height to your desired collapsed height */
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out; /* Add a transition for smooth height changes */
+}

@@ -1,7 +1,7 @@
 import Button from "@mui/material/Button";
 import CardItem from "../../components/card/CardItem";
 import Modal from "@mui/material/Modal";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "../../hooks/redux";
 import Form from "../../components/form/Form";
 import Container from "@mui/material/Container";
@@ -13,27 +13,37 @@ import { IndexedDB } from "../../database/indexedDB.ts";
 import MultipleSelectCheckmarks from "../../components/multipleSelectCheckmarks/MultipleSelectCheckmarks.tsx";
 
 const IndexPage = () => {
-  const [noteForEdit, setNoteForEdit] = React.useState<INoteData | undefined>(
+  const [noteForEdit, setNoteForEdit] = useState<INoteData | undefined>(
     undefined
   );
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const [sortedNotes, setSortedNotes] = React.useState<INoteData[]>([]);
-
+  const [sortedNotes, setSortedNotes] = useState<INoteData[]>([]);
+  const [isShow, setIsShow] = useState<boolean>(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const dispath = useAppDispatch();
 
-  React.useEffect(() => {
+  useEffect(() => {
     IndexedDB.createCollectionsInIndexedDB();
     getAllNote();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (open === false) {
       setNoteForEdit(undefined);
     }
   }, [open]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsShow(true);
+    }, 100);
+
+    return () => {
+      setIsShow(false);
+    };
+  }, []);
 
   const getAllNote = () => {
     const dbPromise = indexedDB.open(dbName, dbVersion);
@@ -50,10 +60,21 @@ const IndexPage = () => {
 
   return (
     <>
-      <MultipleSelectCheckmarks setSortedNotes={setSortedNotes} />
-      <Button sx={{ marginY: 2 }} onClick={handleOpen} variant="outlined">
-        Добавить заметку
-      </Button>
+      <div
+        style={{
+          transition: "transform 0.3s ease",
+          transform: isShow ? "translateX(0)" : "translateX(-150%)",
+          display: "flex",
+          alignItems: "center",
+          zIndex: "-1",
+        }}
+      >
+        <MultipleSelectCheckmarks setSortedNotes={setSortedNotes} />
+        <Button onClick={handleOpen} variant="outlined">
+          Добавить заметку
+        </Button>
+      </div>
+
       <Container>
         <Modal
           open={open}
