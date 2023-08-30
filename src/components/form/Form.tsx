@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import React, { ForwardedRef, forwardRef } from "react";
+import React, { ForwardedRef, forwardRef, useEffect, useState } from "react";
 import { INote, INoteData } from "../../types/notes.interface";
 import Paper from "@mui/material/Paper";
 import { useAppDispatch } from "../../hooks/redux";
@@ -28,15 +28,17 @@ type FormProps = {
 };
 const Form = forwardRef<HTMLFormElement, FormProps>(
   ({ handleClose, noteForEdit }, ref) => {
-    const [note, setNote] = React.useState<INote>({
+    const [note, setNote] = useState<INote>({
       title: "",
       body: "",
       hashtags: [],
     });
     const dispath = useAppDispatch();
-    const [hashTags, setHashTags] = React.useState<string[]>([]);
+    const [hashTags, setHashTags] = useState<string[]>([]);
+    const [errorTitleText, setErrorTitleText] = useState<string>("");
+    const [errorBodyText, setErrorBodyText] = useState<string>("");
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (noteForEdit !== undefined) {
         setNote((prev) => ({
           ...prev,
@@ -48,7 +50,7 @@ const Form = forwardRef<HTMLFormElement, FormProps>(
       }
     }, [noteForEdit]);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (hashTags.length > 0) {
         setNote((prev: INote) => ({ ...prev, hashtags: hashTags }));
       }
@@ -67,6 +69,11 @@ const Form = forwardRef<HTMLFormElement, FormProps>(
     }
 
     function handleSuccessButton() {
+      const isTitleValid = validateInput("title", note.title);
+      const isBodyValid = validateInput("body", note.body);
+      if (!isTitleValid || !isBodyValid) {
+        return;
+      }
       const dbPromise = indexedDB.open(dbName, dbVersion);
       dbPromise.onsuccess = () => {
         const db = dbPromise.result;
@@ -85,6 +92,9 @@ const Form = forwardRef<HTMLFormElement, FormProps>(
     }
 
     function handleEditButton() {
+      // if (!validateTitleInput() || !validateBodyInput()) {
+      //   return;
+      // }
       const dbPromise = indexedDB.open(dbName, dbVersion);
       dbPromise.onsuccess = () => {
         const db = dbPromise.result;
@@ -114,6 +124,56 @@ const Form = forwardRef<HTMLFormElement, FormProps>(
       setNote((prev: INote) => ({ ...prev, title: event.target.value }));
     }
 
+    // const validateTitleInput = () => {
+    //   if (note.title.length === 0) {
+    //     setErrorTitleText("Поле не может быть пустым.");
+    //     return false;
+    //   } else {
+    //     setErrorTitleText("");
+    //     return true;
+    //   }
+    // };
+
+    // const validateBodyInput = () => {
+    //   if (note.body.length === 0) {
+    //     setErrorBodyText("Поле не может быть пустым.");
+    //     return false;
+    //   } else {
+    //     setErrorBodyText("");
+    //     return true;
+    //   }
+    // };
+
+    const validateInput = (fieldName: string, value: string) => {
+      if (value.length === 0) {
+        switch (fieldName) {
+          case "title":
+            setErrorTitleText("Заголовок не может быть пустым.");
+            break;
+          case "body":
+            setErrorBodyText("Поле не может быть пустым.");
+            break;
+          // Add more cases for other fields if needed.
+          default:
+            break;
+        }
+        return false;
+      } else {
+        switch (fieldName) {
+          case "title":
+            setErrorTitleText("");
+            break;
+          case "body":
+            setErrorBodyText("");
+            break;
+          // Add more cases for other fields if needed.
+          default:
+            break;
+        }
+        return true;
+      }
+    };
+
     return (
       <Box sx={form} ref={ref} tabIndex={-1}>
         <Typography
@@ -141,6 +201,8 @@ const Form = forwardRef<HTMLFormElement, FormProps>(
             variant="standard"
             value={note.title}
             onChange={handleChangeTitle}
+            error={Boolean(errorTitleText)}
+            helperText={errorTitleText}
           />
           <TextField
             id="outlined-multiline-flexible"
@@ -150,6 +212,8 @@ const Form = forwardRef<HTMLFormElement, FormProps>(
             maxRows={6}
             value={note.body}
             onChange={handleChangeBody}
+            error={Boolean(errorBodyText)}
+            helperText={errorBodyText}
           />
           {hashTags.length > 0 && (
             <Box
